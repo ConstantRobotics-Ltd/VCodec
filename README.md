@@ -2,9 +2,9 @@
 
 
 
-![logo](_static/vsource_logo.png)
+![logo](_static/vcodec_logo.png)
 
-# **VSource interface C++ library**
+# **VCodec interface C++ library**
 
 **v1.0.0**
 
@@ -14,28 +14,19 @@
 
 - [Overview](#Overview)
 - [Versions](#Versions)
-- [Video source interface class description](#Video-source-interface-class-description)
+- [Video codec interface class description](#Video-codec-interface-class-description)
   - [Class declaration](#Class-declaration)
-  - [getVersion method](#getVersion-method)
-  - [openVSource method](#openVSource-method)
-  - [initVSource method](#initVSource-method)
-  - [isVSourceOpen method](#isVSourceOpen-method)
-  - [closeVSource method](#closeVSource-method)
-  - [getFrame method](#getFrame-method)
+  - [transcode method](#transcode-method)
   - [setParam method](#setParam-method)
   - [getParam method](#getParam-method)
-  - [getParams method](#getParams-method)
   - [executeCommand method](#executeCommand-method)
 - [Data structures](#Data-structures)
-  - [VSourceCommand enum](#VSourceCommand-enum)
-  - [VSourceParam enum](#VSourceParam-enum)
-  - [VSourceParams class](#VSourceParams-class)
-  - [Encode (serialize) video source params](#Encode-(serialize)-video-source-params)
-  - [Decode (deserialize) video source params](#Decode-(deserialize)-video-source-params)
+  - [VCodecCommand enum](#VCodecCommand-enum)
+  - [VCodecParam enum](#VCodecParam-enum)
 
 # Overview
 
-**VSource** C++ library provides standard interface as well defines data structures and rules for different video source classes (video capture classes). **VSource** interface class doesn't do anything, just provides interface. Also **VSource** class provides data structures for video source parameters. Different video source classes inherit form **VSource** C++ class to provide standard control interface. **VSource.h** file contains list of data structures (**VSourceParams** class, **VSourceCommand** enum and **VSourceParam** enum) and **VSource** class declaration. **VSourceParams** class contains video source params and includes methods to encode and decode video source params.  **VSourceCommands** enum contains IDs of commands supported by **VSource** class. **VSourceParam** enum contains IDs of params supported by **VSource** class. All video sources should include params and commands listed in **VSource.h** file. VSource class dependency:<br/>- **Frame** class which describes video frame structure and pixel formats.<br/>- **ConfigReader** class which provides method to work with JSON structures (read/write).
+**VCodec** C++ library provides standard interface as well defines data structures and rules for different video codec classes (video encoding and decoding). **VCodec** interface class doesn't do anything, just provides interface. Different video codec classes inherit interface form **VCodec** C++ class. **VCodec.h** file contains VCodecCommand** enum, **VCodecParam** enum and **VCodec** class declaration. **VCodecCommands** enum contains IDs of commands supported by **VCodec** class. **VCodecParam** enum contains IDs of params supported by **VCodec** class. All video codec should include params and commands listed in **VCodec.h** file. **VCodec** class depends on **Frame** class which determines video frame structure. Video codec interface supports only 8 bit depth input pixels.
 
 # Versions
 
@@ -43,13 +34,13 @@
 
 | Version | Release date | What's new    |
 | ------- | ------------ | ------------- |
-| 1.0.0   | 13.06.2023   | First version |
+| 1.0.0   | 14.06.2023   | First version |
 
-# Video source interface class description
+# Video codec interface class description
 
 ## Class declaration
 
-**VSource** interface class declared in **VSource.h** file. Class declaration:
+**VCodec** interface class declared in **VCodec.h** file. Class declaration:
 
 ```cpp
 namespace cr
@@ -57,9 +48,9 @@ namespace cr
 namespace video
 {
 /**
- * @brief Video source interface class.
+ * @brief Video codec interface class.
  */
-class VSource
+class VCodec
 {
 public:
     /**
@@ -69,69 +60,34 @@ public:
     static std::string getVersion();
 
     /**
-     * @brief Open video source. All params will be set by default.
-     * @param initString Init string. Format depends on implementation.
-     * Default format: <video device or ID or file>;<width>;<height>;<fourcc>
-     * @return TRUE if the video source open or FALSE if not.
-     */
-    virtual bool openVSource(std::string& initString) = 0;
-
-    /**
-     * @brief Init video source. All params will be set according to structure.
-     * @param params Video source parameters structure.
-     * @return TRUE if the video source init or FALSE if not.
-     */
-    virtual bool initVSource(VSourceParams& params) = 0;
-
-    /**
-     * @brief Get open status.
-     * @return TRUE if video source open or FALSE if not.
-     */
-    virtual bool isVSourceOpen() = 0;
-
-    /**
-     * @brief Close video source.
-     */
-    virtual void closeVSource() = 0;
-
-    /**
      * @brief Get new video frame.
-     * @param frame Frame object to copy new data.
-     * @param timeoutMsec Timeout to wait new frame data:
-     * timeoutMs == -1 - Method will wait endlessly until new data arrive.
-     * timeoutMs == 0  - Method will only check if new data exist.
-     * timeoutMs > 0   - Method will wait new data specified time.
-     * @return TRUE if new data exists and copied or FALSE if not.
+     * @param src Source frame (RAW or compressed).
+     * @param dst Result frame (RAW or compressed).
+     * @return TRUE if frame was processed or FLASE if not.
      */
-    virtual bool getFrame(Frame& frame, int32_t timeoutMsec = 0) = 0;
+    virtual bool transcode(Frame& src, Frame& dst) = 0;
 
     /**
-     * @brief Set video source param.
+     * @brief Set video codec param.
      * @param id Parameter ID.
      * @param value Parameter value to set.
-     * @return TRUE if property was set of FALSE.
+     * @return TRUE if parameter was set of FALSE.
      */
-    virtual bool setParam(VSourceParam id, float value) = 0;
+    virtual bool setParam(VCodecParam id, float value) = 0;
 
     /**
-     * @brief Get video source parameter value.
+     * @brief Get video codec parameter value.
      * @param id Parameter ID according to camera specification.
      * @return Parameter value or -1.
      */
-    virtual float getParam(VSourceParam id) = 0;
-
-    /**
-     * @brief Get video source params structure.
-     * @return Video source parameters structure.
-     */
-    virtual VSourceParams getParams() = 0;
+    virtual float getParam(VCodecParam id) = 0;
 
     /**
      * @brief Execute command.
      * @param id Command ID .
      * @return TRUE if the command accepted or FALSE if not.
      */
-    virtual bool executeCommand(VSourceCommand id) = 0;
+    virtual bool executeCommand(VCodecCommand id) = 0;
 };
 }
 }
@@ -139,384 +95,131 @@ public:
 
 ## getVersion method
 
-**getVersion()** method return string of current version of **VSource** class. Particular video source class can have it's own **getVersion()** method. Method declaration:
+**getVersion()** method return string of current version of **VCodec** class. Particular video codec class can have it's own **getVersion()** method. Method declaration:
 
 ```cpp
 static std::string getVersion();
 ```
 
-Method can be used without **VSource** class instance:
+Method can be used without **VCodec** class instance:
 
 ```cpp
-std::cout << "VSource class version: " << VSource::getVersion() << std::endl;
+std::cout << "VCodec class version: " << VCodec::getVersion() << std::endl;
 ```
 
-## openVSource method
+## transcode method
 
-**openVSource(...)** method initialized video source. Instead of **openVSource(...)** method user can call **initVSource(...)**. Method declaration:
-
-```cpp
-virtual bool openVSource(std::string& initString) = 0;
-```
-
-| Parameter  | Value                                                        |
-| ---------- | ------------------------------------------------------------ |
-| initString | Initialization string. Particular video source class can have specific format. Default format: [video device or ID or file];[width];[height];[fourcc]. |
-
-**Returns:** TRUE if the video source open or FALSE if not.
-
-## initVSource method
-
-**initVSource(...)** method initialized video source. Instead of **initVSource(...)** method user can call **openVSource(...)**. Method declaration:
+**transcode(...)** method intended to encode and decode video frame (**Frame** class). Video codec encode/decode video frames frame-by-frame. Method declaration:
 
 ```cpp
-virtual bool initVSource(VSourceParams& params) = 0;
+virtual bool transcode(Frame& src, Frame& dst) = 0;
 ```
 
 | Parameter | Value                                                        |
 | --------- | ------------------------------------------------------------ |
-| params    | VSourceParams structure (see **VSourceParams** description). The video source should set parameters according to params structure. Particular video source can support not all parameters listed in VSourceParams structure. |
+| src       | Source video frame (see **Frame** class description). To encode video data **src** frame must have RAW pixel data (field **fourcc** of **Frame** class): **RGB24**, **BGR24**, **YUYV**, **UYVY**, **GRAY**, **YUV24**, **NV12**, **NV21**, **YU12** or **YV12**. To decode video data **src** frame must have compressed pixel format (field **fourcc** of **Frame** class): **JPEG**, **H264** or **HEVC**. Particular video codec can support limited RAW input pixel format or only one. When it possible video codec should accept all supported RAW pixel formats and should do pixel format conversion inside if it necessary. Also, particular video codec can support all, few or just one compressed pixel format. When it possible video code should support all compressed pixel format to encode/decode. |
+| dst       | Result video frame (see **Frame** class description). To decode video data **src** frame must have compressed pixel format (field **fourcc** of **Frame** class): **JPEG**, **H264** or **HEVC**. In case decoding particular video codec can set output pixel format automatically. To encode video frame user must set **fourcc** field of dst frame to necessary output compressed format: **JPEG**, **H264** or **HEVC**. |
 
-**Returns:** TRUE if the video source open or FALSE if not.
-
-## isVSourceOpen method
-
-**isVSourceOpen()** method returns video source initialization status. Initialization status also included in **VSourceParams** structure structure. Method declaration:
-
-```cpp
-virtual bool isVSourceOpen() = 0;
-```
-
-**Returns:** TRUE if the video source open or FALSE if not.
-
-## closeVSource method
-
-**closeVSource()** method intended to close video source. Method declaration: 
-
-```cpp
-virtual void closeVSource() = 0;
-```
-
-## getFrame method
-
-**getFrame(...)** method intended to get input video frame. Method declaration:
-
-```cpp
-virtual bool getFrame(Frame& frame, int32_t timeoutMsec = 0) = 0;
-```
-
-| Parameter   | Value                                                        |
-| ----------- | ------------------------------------------------------------ |
-| frame       | Output video frame (see **Frame** class description). Video source class determines output pixel format. Pixel format can be set in **initVSource(...)** or **openVSource(...)** methods if particular video source supports it. |
-| timeoutMsec | Timeout to wait new frame data:<br/>- timeoutMs == -1 - Method will wait endlessly until new data arrive.<br/>- timeoutMs == 0  - Method will only check if new data exist.<br/>- timeoutMs > 0   - Method will wait new data specified time. |
-
-**Returns:** TRUE if new data exists and copied or FALSE if not.
+**Returns:** TRUE if frame was encoded/decoded or FALSE if not.
 
 ## setParam method
 
-**setParam(...)** method designed to set new video source parameters value. Method declaration:
+**setParam(...)** method designed to set new video codec parameters value. Method declaration:
 
 ```cpp
-virtual bool setParam(VSourceParam id, float value) = 0;
+virtual bool setParam(VCodecParam id, float value) = 0;
 ```
 
-| Parameter | Description                                                  |
-| --------- | ------------------------------------------------------------ |
-| id        | Video source parameter ID according to **VSourceParam** enum. |
-| value     | Video source parameter value.                                |
+| Parameter | Description                                                 |
+| --------- | ----------------------------------------------------------- |
+| id        | Video codec parameter ID according to **VCodecParam** enum. |
+| value     | Video codec parameter value.                                |
 
 **Returns:** TRUE is the parameter was set or FALSE if not.
 
 ## getParam method
 
-**getParam(...)** method designed to obtain video source parameter value. Method declaration:
+**getParam(...)** method designed to obtain video codec parameter value. Method declaration:
 
 ```cpp
-virtual float getParam(VSourceParam id) = 0;
+virtual float getParam(VCodecParam id) = 0;
 ```
 
-| Parameter | Description                                                  |
-| --------- | ------------------------------------------------------------ |
-| id        | Video source parameter ID according to **VSourceParam** enum. |
+| Parameter | Description                                                 |
+| --------- | ----------------------------------------------------------- |
+| id        | Video codec parameter ID according to **VCodecParam** enum. |
 
-**Returns:** parameter value or -1 of the parameters doesn't exist in particular video source class.
-
-## getParams method
-
-**getParams(...)** method designed to obtain video source params structures. Method declaration:
-
-```cpp
-virtual VSourceParams getParams() = 0;
-```
-
-**Returns:** parameter video source parameters structure.
+**Returns:** parameter value or -1 of the parameters doesn't exist in particular video codec class.
 
 ## executeCommand method
 
-**executeCommand(...)** method designed to execute video source command. Method declaration:
+**executeCommand(...)** method designed to execute video codec command. Method declaration:
 
 ```cpp
-virtual bool executeCommand(VSourceCommand id) = 0;
+virtual bool executeCommand(VCodecCommand id) = 0;
 ```
 
-| Parameter | Description                                                  |
-| --------- | ------------------------------------------------------------ |
-| id        | Video source command ID according to **VSourceCommand** enum. |
+| Parameter | Description                                                 |
+| --------- | ----------------------------------------------------------- |
+| id        | Video codec command ID according to **VCodecCommand** enum. |
 
 **Returns:** TRUE is the command was executed or FALSE if not.
 
 # Data structures
 
-**VSource.h** file defines IDs for parameters (**VSourceParam** enum), IDs for commands (**VSourceCommand** enum) and **VSourceParams** class.
+**VCodec.h** file defines IDs for parameters (**VCodecParam** enum) and IDs for commands (**VCodecCommand** enum).
 
-## VSourceCommand enum
+## VCodecCommand enum
 
 Enum declaration:
 
 ```cpp
-enum class VSourceCommand
+enum class VCodecCommand
 {
-    /// Restart.
-    RESTART = 1,
-    /// Apply settings.
-    APPLY_PARAMS
+    /// Reset.
+    RESET = 1,
+    /// Generate key frame. For H264 and H265 codecs.
+    MAKE_KEY_FRAME
 };
 ```
 
-**Table 2** - Video source commands description. Some commands maybe unsupported by particular video source class.
+**Table 2** - Video codec commands description. Some commands maybe unsupported by particular video codec class.
 
-| Command      | Description                                  |
-| ------------ | -------------------------------------------- |
-| RESTART      | Restart video source (close and open again). |
-| APPLY_PARAMS | Apply (Save) parameters.                     |
+| Command        | Description                                                  |
+| -------------- | ------------------------------------------------------------ |
+| RESET          | Reset video codec.                                           |
+| MAKE_KEY_FRAME | Command to generate key frame for H264 or H265(HEVC) encoding. |
 
-## VSourceParam enum
+## VCodecParam enum
 
 Enum declaration:
 
 ```cpp
-enum class VSourceParam
+enum class VCodecParam
 {
     /// [read/write] Log level:
     /// 0-Disable, 1-Console, 2-File, 3-Console and file.
     LOG_LEVEL = 1,
-    /// [read/write] Frame width.
-    WIDTH,
-    /// [read/write] Frame height.
-    HEIGHT,
-    /// [read/write] Gain mode. Depends on implementation.
-    /// Default: 0 - Manual, 1 - Auto.
-    GAIN_MODE,
-    /// [read/write] Gain value in case manual gain mode.
-    /// Value: 0(min) - 65535(max).
-    GAIN,
-    /// [read/write] Exposure mode. Depends on implementation.
-    /// Default: 0 - Manual, 1 - Auto.
-    EXPOSURE_MODE,
-    /// [read/write] Exposure value in case manual exposure mode.
-    /// Value: 0(min) - 65535(max).
-    EXPOSURE,
-    /// [read/write] Focus mode. Depends on implementation.
-    /// Default: 0 - Manual, 1 - Auto.
-    FOCUS_MODE,
-    /// [read/write] Focus position.
-    /// Value: 0(full near) - 65535(full far).
-    FOCUS_POS,
-    /// [read only] Cycle processing time microsecconds.
-    CYCLE_TIME_MKS,
-    /// [read/write]  FPS. 0 - will be set automatically.
+    /// [read/write] Bitrate, kbps. For H264 and H265 codecs.
+    BITRATE_KBPS,
+    /// [read/write] Quality 0-100%. For JPEG codecs.
+    QUALITY,
+    /// [read/write] FPS. For H264 and H265 codecs.
     FPS,
-    /// Open flag. 0 - not open, 1 - open.
-    IS_OPEN
+    /// [read/write] GOP size. For H264 and H265 codecs.
+    GOP,
+    /// [read/write] H264 profile: 0 - Baseline, 1 - Main, 2 - High.
+    H264_PROFILE
 };
 ```
 
-**Table 3** - Video source params description. Some params maybe unsupported by particular video source class.
+**Table 3** - Video codec params description. Some params maybe unsupported by particular video codec class.
 
-| Parameter      | Access       | Description                                                  |
-| -------------- | ------------ | ------------------------------------------------------------ |
-| LOG_LEVEL      | read / write | Logging mode. Default values:<br/>0 - Disable.<br/>1 - Only file.<br/>2 - Only terminal.<br/>3 - File and terminal. |
-| WIDTH          | read / write | Frame width. User can set frame width before initialization or after. Some video source classes may set width automatically. |
-| HEIGHT         | read / write | Frame height. User can set frame height before initialization or after. Some video source classes may set height automatically. |
-| GAIN_MODE      | read / write | Gain mode. Value depends on implementation. Default values: 0 - Manual control, 1 - Auto. |
-| GAIN           | read / write | Gain value. Value: 0(min for particular video source class) - 65535(max for particular video source class). |
-| EXPOSURE_MODE  | read / write | Exposure mode. Value depends on implementation. Default values: 0 - Manual control, 1 - Auto. |
-| EXPOSURE       | read / write | Exposure value. Value: 0(min for particular video source class) - 65535(max for particular video source class). |
-| FOCUS_MODE     | read / write | Focus mode. Value depends on implementation. Default values: 0 - Manual control, 1 - Auto. |
-| FOCUS_POS      | read / write | Focus position. Value: 0(full near) - 65535(full far).       |
-| CYCLE_TIME_MKS | read only    | Video capture cycle time. **VSource** class sets this value automatically. |
-| FPS            | read / write | FPS. User can set frame FPS before initialization or after. Some video source classes may set FPS automatically. |
-| IS_OPEN        | read only    | Open flag. 0 - not open, 1 - open.                           |
-
-## **VSourceParams class**
-
-**VSourceParams** class used for video source initialization (**initVSource(...)** method) or to get all actual params (**getParams()** method). Also **VSourceParams** provide structure to write/read params from JSON files (**JSON_READABLE** macro) and provide methos to encode and decode params. Class declaration:
-
-```cpp
-class VSourceParams
-{
-public:
-    /// Log level: Disable, Console, File, Console and file.
-    std::string logLevel{"Disable"};
-    /// Video source name.
-    std::string source{"/dev/video0"};
-    /// FOURCC: RGB24, BGR24, YUYV, UYVY, GRAY, YUV24, NV12, NV21, YU12, YV12.
-    std::string fourcc{"YUYV"};
-    /// Frame width. 0 - will be set automatically.
-    int width{1920};
-    /// Frame height. 0 - will be set automatically.
-    int height{1080};
-    /// Gain mode. Depends on implementation. Default: 0 - Manual, 1 - Auto.
-    int gainMode{1};
-    /// Gain value in case manual gain mode. Value: 0(min) - 65535(max).
-    int gain{0};
-    /// Exposure mode. Depends on implementation. Default: 0 - Manual, 1 - Auto.
-    int exposureMode{1};
-    /// Exposure value in case manual exposure mode. Value: 0(min) - 65535(max).
-    int exposure{1};
-    /// Focus mode. Depends on implementation. Default: 0 - Manual, 1 - Auto.
-    int focusMode{1};
-    /// Focus position. Value: 0(full near) - 65535(full far).
-    int focusPos{0};
-    /// Cycle processing time microsecconds.
-    int cycleTimeMks{0};
-    /// FPS. 0 - will be set automatically.
-    float fps{0};
-    /// Open flag.
-    bool isOpen{false};
-
-    JSON_READABLE(VSourceParams,
-                  logLevel,
-                  source,
-                  fourcc,
-                  width,
-                  height,
-                  gainMode,
-                  gain,
-                  exposureMode,
-                  exposure,
-                  focusMode,
-                  focusPos,
-                  fps);
-
-    /**
-     * @brief operator =
-     * @param src Source object.
-     * @return VSourceParams obect.
-     */
-    VSourceParams& operator= (const VSourceParams& src);
-
-    /**
-     * @brief Encode params. The method doesn't encode params:
-     * logLevel, source and fourcc.
-     * @param data Pointer to data buffer.
-     * @param size Size of data.
-     */
-    void encode(uint8_t* data, int& size);
-
-    /**
-     * @brief Decode params. The method doesn't decode params:
-     * logLevel, source and fourcc.
-     * @param data Pointer to data.
-     * @return TRUE is params decoded or FALSE if not.
-     */
-    bool decode(uint8_t* data, int size);
-};
-```
-
-**Table 4** - VSourceParams class fields description.
-
-| Field        | type   | Description                                                  |
-| ------------ | ------ | ------------------------------------------------------------ |
-| logLevel     | string | Logging mode. Default values:<br/>"Disable" - Disable printing log info.<br/>"File" - Only printing in file.<br/>"Console" - Only printing in terminal.<br/>"Console and file" - File and terminal printing. |
-| source       | string | Video device name (depends on OS), video source or file. Format depends on particular video source class. |
-| fourcc       | string | FOURCC: RGB24, BGR24, YUYV, UYVY, GRAY, YUV24, NV12, NV21, YU12, YV12. Value says to video source class which pixel format preferable for output video frame. Particular video source class can ignore this params during initialization. Parameters should be set before initialization. |
-| width        | int    | Frame width. User can set frame width before initialization or after. Some video source classes may set width automatically. |
-| height       | int    | Frame height. User can set frame height before initialization or after. Some video source classes may set height automatically. |
-| gainMode     | int    | Gain mode. Value depends on implementation. Default values: 0 - Manual control, 1 - Auto. |
-| gain         | int    | Gain value. Value: 0(min for particular video source class) - 65535(max for particular video source class). |
-| exposureMode | int    | Exposure mode. Value depends on implementation. Default values: 0 - Manual control, 1 - Auto. |
-| exposure     | int    | Exposure value. Value: 0(min for particular video source class) - 65535(max for particular video source class). |
-| focusMode    | int    | Focus mode. Value depends on implementation. Default values: 0 - Manual control, 1 - Auto. |
-| focusPos     | int    | Focus position. Value: 0(full near) - 65535(full far).       |
-| cycleTimeMks | int    | Video capture cycle time. **VSource** class sets this value automatically. |
-| fps          | float  | FPS. User can set frame FPS before initialization or after. Some video source classes may set FPS automatically. |
-| isOpen       | bool   | Open flag. FLASE - video source not open, TRUE - video source open. |
-
-**None:** *VSourceParams class filelds listed in Table 4 **must** reflect params set/get by methods setParam(...) and getParam(...).* 
-
-## Encode (serialize) video source params
-
-**VSourceParams** class provides method **encode(...)** to serialize video source params (fields of VSourceParams class, see Table 4). Serialization of video source params necessary in case when you need to send video source params via communication channels. Method doesn't encode fields: **logLevel**, **source** and **fourcc**. Method declaration:
-
-```cpp
-void encode(uint8_t* data, int& size);
-```
-
-| Parameter | Value                                                        |
-| --------- | ------------------------------------------------------------ |
-| data      | Pointer to data buffer. Buffer size should be at least **43** bytes. |
-| size      | Size of encoded data. 43 bytes by default.                   |
-
-**Example:**
-
-```cpp
-// Prepare random params.
-VSourceParams in;
-in.source = "alsfghljb";
-in.fourcc = "skdfjhvk";
-in.logLevel = "dsglbjlkfjwjgre";
-in.cycleTimeMks = rand() % 255;
-in.exposure = rand() % 255;
-in.exposureMode = rand() % 255;
-in.gainMode = rand() % 255;
-in.gain = rand() % 255;
-in.focusMode = rand() % 255;
-in.focusPos = rand() % 255;
-in.fps = rand() % 255;
-in.width = rand() % 255;
-in.height = rand() % 255;
-in.isOpen = true;
-
-// Encode data.
-uint8_t data[1024];
-int size = 0;
-in.encode(data, size);
-
-cout << "Encoded data size: " << size << " bytes" << endl;
-```
-
-## Decode (deserialize) video source params
-
-**VSourceParams** class provides method **decode(...)** to deserialize video source params (fields of VSourceParams class, see Table 4). Deserialization of video source params necessary in case when you need to receive video source params via communication channels. Method doesn't decode fields: **logLevel**, **source** and **fourcc**. Method declaration:
-
-```cpp
-bool decode(uint8_t* data, int size);
-```
-
-| Parameter | Value                                                        |
-| --------- | ------------------------------------------------------------ |
-| data      | Pointer to encode data buffer. Data size should be at least **43** bytes. |
-| size      | Size of encoded data. 43 bytes by default.                   |
-
-**Returns:** TRUE if data decoded (deserialized) or FALSE if not.
-
-**Example:**
-
-```cpp
-// Encode data.
-VSourceParams in;
-uint8_t data[1024];
-int size = 0;
-in.encode(data, size);
-
-cout << "Encoded data size: " << size << " bytes" << endl;
-
-// Decode data.
-VSourceParams out;
-if (!out.decode(data, size))
-    cout << "Can't decode data" << endl;
-```
-
-
-
+| Parameter    | Access       | Description                                                  |
+| ------------ | ------------ | ------------------------------------------------------------ |
+| LOG_LEVEL    | read / write | Logging mode. Default values:<br/>0 - Disable.<br/>1 - Only file.<br/>2 - Only terminal.<br/>3 - File and terminal. |
+| BITRATE_KBPS | read / write | Bitrate, kbps. For H264 and H265(HEVC) encoding. According to this value, FPS and GOP size video codec calculate parameter for H264 or H265(HEVC) encoding. |
+| QUALITY      | read / write | Quality 0(low quality)-100%(maximum quality). For JPEG encoding. |
+| FPS          | read / write | FPS. For H264 and H265 codecs. According to this value, FPS and GOP size video codec calculate parameter for H264 or H265(HEVC) encoding. |
+| GOP          | read / write | GOP size (Period of key frames) for H264 or H265(HEVC) encoding. Value: 1 - each output frame is key frame, 20 - each 20th frame is key frame etc. |
+| H264_PROFILE | read / write | H264 profile for H264 encoding: 0 - Baseline, 1 - Main, 2 - High. |

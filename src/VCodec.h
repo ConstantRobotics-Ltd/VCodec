@@ -17,7 +17,7 @@ enum class VCodecParam
     /// 0-Disable, 1-Console, 2-File, 3-Console and file.
     LOG_LEVEL = 1,
     /// [read/write] Bitrate, kbps. For H264 and H265 codecs.
-    BITRATE,
+    BITRATE_KBPS,
     /// [read/write] Quality 0-100%. For JPEG codecs.
     QUALITY,
     /// [read/write] FPS. For H264 and H265 codecs.
@@ -56,7 +56,6 @@ public:
      */
     static std::string getVersion();
 
-
     /**
      * @brief Get new video frame.
      * @param src Source frame (RAW or compressed).
@@ -87,7 +86,6 @@ public:
      */
     virtual bool executeCommand(VCodecCommand id) = 0;
 };
-
 }
 }
 
