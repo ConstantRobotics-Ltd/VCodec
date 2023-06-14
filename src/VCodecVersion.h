@@ -1,0 +1,7 @@
+#pragma once
+
+#define VCODEC_MAJOR_VERSION 1
+#define VCODEC_MINOR_VERSION 0
+#define VCODEC_PATCH_VERSION 0
+
+#define VCODEC_VERSION "1.0.0"
