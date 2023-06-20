@@ -6,7 +6,7 @@
 
 # **VCodec interface C++ library**
 
-**v1.0.0**
+**v1.1.0**
 
 ------
 
@@ -32,9 +32,10 @@
 
 **Table 1** - Library versions.
 
-| Version | Release date | What's new    |
-| ------- | ------------ | ------------- |
-| 1.0.0   | 14.06.2023   | First version |
+| Version | Release date | What's new             |
+| ------- | ------------ | ---------------------- |
+| 1.0.0   | 14.06.2023   | First version.         |
+| 1.1.0   | 20.06.2023   | - Added new parameter. |
 
 # Video codec interface class description
 
@@ -209,7 +210,9 @@ enum class VCodecParam
     /// [read/write] GOP size. For H264 and H265 codecs.
     GOP,
     /// [read/write] H264 profile: 0 - Baseline, 1 - Main, 2 - High.
-    H264_PROFILE
+    H264_PROFILE,
+    /// [read/write] Codec type. Depends on implementation.
+    TYPE
 };
 ```
 
@@ -223,3 +226,4 @@ enum class VCodecParam
 | FPS          | read / write | FPS. For H264 and H265 codecs. According to this value, FPS and GOP size video codec calculate parameter for H264 or H265(HEVC) encoding. |
 | GOP          | read / write | GOP size (Period of key frames) for H264 or H265(HEVC) encoding. Value: 1 - each output frame is key frame, 20 - each 20th frame is key frame etc. |
 | H264_PROFILE | read / write | H264 profile for H264 encoding: 0 - Baseline, 1 - Main, 2 - High. |
+| TYPE         | read / write | Codec type. Depends on implementation. It can be type of backend. Some codecs may not support this parameter. |

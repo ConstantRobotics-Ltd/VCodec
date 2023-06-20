@@ -25,7 +25,9 @@ enum class VCodecParam
     /// [read/write] GOP size. For H264 and H265 codecs.
     GOP,
     /// [read/write] H264 profile: 0 - Baseline, 1 - Main, 2 - High.
-    H264_PROFILE
+    H264_PROFILE,
+    /// [read/write] Codec type. Depends on implementation.
+    TYPE
 };
 
 
