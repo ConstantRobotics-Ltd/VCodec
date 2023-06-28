@@ -27,7 +27,13 @@ enum class VCodecParam
     /// [read/write] H264 profile: 0 - Baseline, 1 - Main, 2 - High.
     H264_PROFILE,
     /// [read/write] Codec type. Depends on implementation.
-    TYPE
+    TYPE,
+    /// Custom 1. Depends on implementation.
+    CUSTOM_1,
+    /// Custom 2. Depends on implementation.
+    CUSTOM_2,
+    /// Custom 3. Depends on implementation.
+    CUSTOM_3
 };
 
 
@@ -59,7 +65,7 @@ public:
     static std::string getVersion();
 
     /**
-     * @brief Get new video frame.
+     * @brief Encode/decode.
      * @param src Source frame (RAW or compressed).
      * @param dst Result frame (RAW or compressed).
      * @return TRUE if frame was processed or FLASE if not.
@@ -75,7 +81,7 @@ public:
     virtual bool setParam(VCodecParam id, float value) = 0;
 
     /**
-     * @brief Get video codec parameter value.
+     * @brief Get video codec param value.
      * @param id Parameter ID according to camera specification.
      * @return Parameter value or -1.
      */
