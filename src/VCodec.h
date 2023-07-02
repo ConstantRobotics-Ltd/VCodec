@@ -60,7 +60,7 @@ public:
 
     /**
      * @brief Get string of current library version.
-     * @return String of current library version.
+     * @return String of current library version in format "Major.Minor.Patch".
      */
     static std::string getVersion();
 
@@ -73,7 +73,7 @@ public:
     virtual bool transcode(Frame& src, Frame& dst) = 0;
 
     /**
-     * @brief Set video codec param.
+     * @brief Set parameter.
      * @param id Parameter ID.
      * @param value Parameter value to set.
      * @return TRUE if parameter was set of FALSE.
@@ -81,8 +81,8 @@ public:
     virtual bool setParam(VCodecParam id, float value) = 0;
 
     /**
-     * @brief Get video codec param value.
-     * @param id Parameter ID according to camera specification.
+     * @brief Get parameter.
+     * @param id Parameter ID.
      * @return Parameter value or -1.
      */
     virtual float getParam(VCodecParam id) = 0;
