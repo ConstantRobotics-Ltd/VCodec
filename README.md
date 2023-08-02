@@ -6,7 +6,7 @@
 
 # **VCodec interface C++ library**
 
-**v1.1.1**
+**v1.1.2**
 
 ------
 
@@ -44,6 +44,7 @@
 | 1.0.0   | 14.06.2023   | First version.                                               |
 | 1.1.0   | 20.06.2023   | - Added new parameter.                                       |
 | 1.1.1   | 28.06.2023   | - Frame submodule updated.<br />- Documentation updated.<br />- License added.<br />- Repository made public.<br />- Added new parameters. |
+| 1.1.2   | 02.08.2023   | - Frame submodule updated.                                   |
 
 
 
