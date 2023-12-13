@@ -45,7 +45,7 @@
 | 1.1.0   | 20.06.2023   | - Added new parameter.                                       |
 | 1.1.1   | 28.06.2023   | - Frame submodule updated.<br />- Documentation updated.<br />- License added.<br />- Repository made public.<br />- Added new parameters. |
 | 1.1.2   | 02.08.2023   | - Frame submodule updated.                                   |
-| 1.2.2   | 13.12.2023   | - Virtual destructer added.                                  |
+| 1.2.2   | 13.12.2023   | - Virtual destructor added.                                  |
 
 
 
