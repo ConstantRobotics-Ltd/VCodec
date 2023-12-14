@@ -6,7 +6,7 @@
 
 # **VCodec interface C++ library**
 
-**v1.2.2**
+**v2.1.1**
 
 ------
 
@@ -45,7 +45,7 @@
 | 1.1.0   | 20.06.2023   | - Added new parameter.                                       |
 | 1.1.1   | 28.06.2023   | - Frame submodule updated.<br />- Documentation updated.<br />- License added.<br />- Repository made public.<br />- Added new parameters. |
 | 1.1.2   | 02.08.2023   | - Frame submodule updated.                                   |
-| 1.2.2   | 14.12.2023   | - Virtual destructor added.<br />- Frame submodule updated.  |
+| 2.1.1   | 14.12.2023   | - Virtual destructor added.<br />- Frame submodule updated.  |
 
 
 
@@ -125,7 +125,7 @@ std::cout << "VCodec class version: " << VCodec::getVersion() << std::endl;
 Console output:
 
 ```bash
-VCodec class version: 1.2.2
+VCodec class version: 2.1.1
 ```
 
 
