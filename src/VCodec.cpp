@@ -9,6 +9,13 @@ using namespace cr::video;
 
 
 
+VCodec::~VCodec()
+{
+
+}
+
+
+
 /// Get string of current library version.
 std::string VCodec::getVersion()
 {
