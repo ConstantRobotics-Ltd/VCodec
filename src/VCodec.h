@@ -59,6 +59,11 @@ class VCodec
 public:
 
     /**
+     * @brief Class destructor.
+     */
+    virtual ~VCodec();
+
+    /**
      * @brief Get string of current library version.
      * @return String of current library version in format "Major.Minor.Patch".
      */
