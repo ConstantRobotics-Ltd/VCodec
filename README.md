@@ -2,36 +2,37 @@
 
 
 
-![logo](_static/vcodec_logo.png)
+![vcodec_web_logo](_static/vcodec_web_logo.png)
+
+
 
 # **VCodec interface C++ library**
 
-**v2.1.1**
+**v2.1.2**
 
-------
 
 
 
 # Table of contents
 
-- [Overview](#Overview)
-- [Versions](#Versions)
-- [Video codec interface class description](#Video-codec-interface-class-description)
-  - [Class declaration](#Class-declaration)
+- [Overview](#overview)
+- [Versions](#versions)
+- [Video codec interface class description](#video-codec-interface-class-description)
+  - [Class declaration](#class-declaration)
   - [transcode method](#transcode-method)
-  - [setParam method](#setParam-method)
-  - [getParam method](#getParam-method)
-  - [executeCommand method](#executeCommand-method)
-- [Data structures](#Data-structures)
-  - [VCodecCommand enum](#VCodecCommand-enum)
-  - [VCodecParam enum](#VCodecParam-enum)
-- [Build and connect to your project](#Build-and-connect-to-your-project)
+  - [setParam method](#setparam-method)
+  - [getParam method](#getparam-method)
+  - [executeCommand method](#executecommand-method)
+- [Data structures](#data-structures)
+  - [VCodecCommand enum](#vcodeccommand-enum)
+  - [VCodecParam enum](#vcodecparam-enum)
+- [Build and connect to your project](#build-and-connect-to-your-project)
 
 
 
 # Overview
 
-**VCodec** C++ library provides standard interface as well defines data structures and rules for different video codec classes (video encoding and decoding). **VCodec** interface class doesn't do anything, just provides interface. Different video codec classes inherit interface form **VCodec** C++ class. **VCodec.h** file contains **VCodecCommand** enum, **VCodecParam** enum and **VCodec** class declaration. **VCodecCommands** enum contains IDs of commands supported by **VCodec** class. **VCodecParam** enum contains IDs of params supported by **VCodec** class. All video codec should include params and commands listed in **VCodec.h** file. **VCodec** class depends on **Frame** class which determines video frame structure. Video codec interface supports only 8 bit depth input pixels.
+**VCodec** C++ library provides standard interface as well defines data structures and rules for different video codec classes (video encoding and decoding). **VCodec** interface class doesn't do anything, just provides interface. Different video codec classes inherit interface form **VCodec** C++ class. **VCodec.h** file contains **VCodecCommand** enum, **VCodecParam** enum and **VCodec** class declaration. **VCodecCommands** enum contains IDs of commands supported by **VCodec** class. **VCodecParam** enum contains IDs of params supported by **VCodec** class. All video codec should include params and commands listed in **VCodec.h** file. **VCodec** class depends on [Frame](https://github.com/ConstantRobotics-Ltd/Frame) class which determines video frame structure. Video codec interface supports only 8 bit depth input pixels. It uses C++17 standard. The library is licensed under the **Apache 2.0** license.
 
 
 
@@ -46,71 +47,67 @@
 | 1.1.1   | 28.06.2023   | - Frame submodule updated.<br />- Documentation updated.<br />- License added.<br />- Repository made public.<br />- Added new parameters. |
 | 1.1.2   | 02.08.2023   | - Frame submodule updated.                                   |
 | 2.1.1   | 14.12.2023   | - Virtual destructor added.<br />- Frame submodule updated.  |
+| 2.1.2   | 14.12.2023   | - Frame submodule updated.<br />- Documentation updated.  |
+
+
+
+# Library files
+
+The library supplied by source code only. The user would be given a set of files in the form of a CMake project (repository). The repository structure is shown below:
+
+```xml
+CMakeLists.txt ---------------- Main CMake file of the library.
+3rdparty ---------------------- Folder with 3rdparty libraries.
+    CMakeLists.txt ------------ CMake file to include 3rdparty libraries.
+    Frame --------------------- Folder with Frame library files.
+src --------------------------- Folder with library source code.
+    CMakeLists.txt ------------ CMake file.
+    VCodec.h ------------------ Main library header file.
+    VCodecVersion.h ----------- Header file with library version.
+    VCodecVersion.h.in -------- File for CMake to generate version header.
+    VCodec.cpp ---------------- C++ implementation file.
+```
 
 
 
 # Video codec interface class description
+
+
 
 ## Class declaration
 
 **VCodec** interface class declared in **VCodec.h** file. Class declaration:
 
 ```cpp
-namespace cr
-{
-namespace video
-{
-/**
- * @brief Video codec interface class.
- */
 class VCodec
 {
 public:
-    /**
-     * @brief Class destructor.
-     */
+
+    /// Class destructor.
     virtual ~VCodec();
-    /**
-     * @brief Get string of current library version.
-     * @return String of current library version.
-     */
+
+    /// Get string of current library version.
     static std::string getVersion();
-    /**
-     * @brief Encode/decode.
-     * @param src Source frame (RAW or compressed).
-     * @param dst Result frame (RAW or compressed).
-     * @return TRUE if frame was processed or FLASE if not.
-     */
+
+    /// Encode/decode.
     virtual bool transcode(Frame& src, Frame& dst) = 0;
-    /**
-     * @brief Set video codec param.
-     * @param id Parameter ID.
-     * @param value Parameter value to set.
-     * @return TRUE if parameter was set of FALSE.
-     */
+
+    /// Set parameter.
     virtual bool setParam(VCodecParam id, float value) = 0;
-    /**
-     * @brief Get video codec parameter value.
-     * @param id Parameter ID according to camera specification.
-     * @return Parameter value or -1.
-     */
+
+    /// Get parameter.
     virtual float getParam(VCodecParam id) = 0;
-    /**
-     * @brief Execute command.
-     * @param id Command ID .
-     * @return TRUE if the command accepted or FALSE if not.
-     */
+
+    /// Execute command.
     virtual bool executeCommand(VCodecCommand id) = 0;
 };
-}
-}
 ```
 
 
 
 ## getVersion method
 
-**getVersion()** method returns string of current version of **VCodec** class. Particular video codec class can have it's own **getVersion()** method. Method declaration:
+The **getVersion()** method returns string of current version of **VCodec** class. Particular video codec class can have it's own **getVersion()** method. Method declaration:
 
 ```cpp
 static std::string getVersion();
@@ -125,14 +122,14 @@ std::cout << "VCodec class version: " << VCodec::getVersion() << std::endl;
 Console output:
 
 ```bash
-VCodec class version: 2.1.1
+VCodec class version: 2.1.2
 ```
 
 
 
 ## transcode method
 
-**transcode(...)** method intended to encode and decode video frame (**Frame** class). Video codec encode/decode video frames frame-by-frame. Method declaration:
+The **transcode(...)** method intended to encode and decode video frame ([Frame](https://github.com/ConstantRobotics-Ltd/Frame) class). Video codec encode/decode video frames frame-by-frame. Method declaration:
 
 ```cpp
 virtual bool transcode(Frame& src, Frame& dst) = 0;
@@ -140,7 +137,7 @@ virtual bool transcode(Frame& src, Frame& dst) = 0;
 
 | Parameter | Value                                                        |
 | --------- | ------------------------------------------------------------ |
-| src       | Source video frame (see **Frame** class description). To encode video data **src** frame must have RAW pixel data (field **fourcc** of **Frame** class): **RGB24**, **BGR24**, **YUYV**, **UYVY**, **GRAY**, **YUV24**, **NV12**, **NV21**, **YU12** or **YV12**. To decode video data **src** frame must have compressed pixel format (field **fourcc** of **Frame** class): **JPEG**, **H264** or **HEVC**. Particular video codec can support limited RAW input pixel format or only one. When it possible video codec should accept all supported RAW pixel formats and should do pixel format conversion inside if it necessary. Also, particular video codec can support all, few or just one compressed pixel format. When it possible video code should support all compressed pixel format to encode/decode. |
+| src       | Source video frame (see [Frame](https://github.com/ConstantRobotics-Ltd/Frame) class description). To encode video data **src** frame must have RAW pixel data (field **fourcc** of **Frame** class): **RGB24**, **BGR24**, **YUYV**, **UYVY**, **GRAY**, **YUV24**, **NV12**, **NV21**, **YU12** or **YV12**. To decode video data **src** frame must have compressed pixel format (field **fourcc** of **Frame** class): **JPEG**, **H264** or **HEVC**. Particular video codec can support limited RAW input pixel format or only one. When it possible video codec should accept all supported RAW pixel formats and should do pixel format conversion inside if it necessary. Also, particular video codec can support all, few or just one compressed pixel format. When it possible video code should support all compressed pixel format to encode/decode. |
 | dst       | Result video frame (see **Frame** class description). To decode video data **src** frame must have compressed pixel format (field **fourcc** of **Frame** class): **JPEG**, **H264** or **HEVC**. In case decoding particular video codec can set output pixel format automatically. To encode video frame user must set **fourcc** field of dst frame to necessary output compressed format: **JPEG**, **H264** or **HEVC**. The method will write decoded frame data (RAW pixel format) to **data** filed of **src** frame in case decoding or will write compressed data in case encoding. |
 
 **Returns:** TRUE if frame was encoded/decoded or FALSE if not.
@@ -149,7 +146,7 @@ virtual bool transcode(Frame& src, Frame& dst) = 0;
 
 ## setParam method
 
-**setParam(...)** method designed to set new video codec parameters value. Method declaration:
+The **setParam(...)** method designed to set new video codec parameters value. Method declaration:
 
 ```cpp
 virtual bool setParam(VCodecParam id, float value) = 0;
@@ -157,7 +154,7 @@ virtual bool setParam(VCodecParam id, float value) = 0;
 
 | Parameter | Description                                                 |
 | --------- | ----------------------------------------------------------- |
-| id        | Video codec parameter ID according to **VCodecParam** enum. |
+| id        | Video codec parameter ID according to [VCodecParam](#vcodecparam-enum) enum. |
 | value     | Video codec parameter value.                                |
 
 **Returns:** TRUE is the parameter was set or FALSE if not.
@@ -166,7 +163,7 @@ virtual bool setParam(VCodecParam id, float value) = 0;
 
 ## getParam method
 
-**getParam(...)** method designed to obtain video codec parameter value. Method declaration:
+The **getParam(...)** method designed to obtain video codec parameter value. Method declaration:
 
 ```cpp
 virtual float getParam(VCodecParam id) = 0;
@@ -174,7 +171,7 @@ virtual float getParam(VCodecParam id) = 0;
 
 | Parameter | Description                                                 |
 | --------- | ----------------------------------------------------------- |
-| id        | Video codec parameter ID according to **VCodecParam** enum. |
+| id        | Video codec parameter ID according to [VCodecParam](#vcodecparam-enum) enum. |
 
 **Returns:** parameter value or -1 of the parameters doesn't exist in particular video codec class.
 
@@ -182,7 +179,7 @@ virtual float getParam(VCodecParam id) = 0;
 
 ## executeCommand method
 
-**executeCommand(...)** method designed to execute video codec command. Method declaration:
+The **executeCommand(...)** method designed to execute video codec command. Method declaration:
 
 ```cpp
 virtual bool executeCommand(VCodecCommand id) = 0;
@@ -190,7 +187,7 @@ virtual bool executeCommand(VCodecCommand id) = 0;
 
 | Parameter | Description                                                 |
 | --------- | ----------------------------------------------------------- |
-| id        | Video codec command ID according to **VCodecCommand** enum. |
+| id        | Video codec command ID according to [VCodecCommand](#vcodeccommand-enum) enum. |
 
 **Returns:** TRUE is the command was executed or FALSE if not.
 
