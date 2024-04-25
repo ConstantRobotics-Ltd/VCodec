@@ -1,15 +1,10 @@
-
-
-
-
 ![vcodec_web_logo](_static/vcodec_web_logo.png)
 
 
 
 # **VCodec interface C++ library**
 
-**v2.1.2**
-
+**v2.1.3**
 
 
 
@@ -17,6 +12,7 @@
 
 - [Overview](#overview)
 - [Versions](#versions)
+- [Library files](#library-files)
 - [Video codec interface class description](#video-codec-interface-class-description)
   - [Class declaration](#class-declaration)
   - [transcode method](#transcode-method)
@@ -47,7 +43,8 @@
 | 1.1.1   | 28.06.2023   | - Frame submodule updated.<br />- Documentation updated.<br />- License added.<br />- Repository made public.<br />- Added new parameters. |
 | 1.1.2   | 02.08.2023   | - Frame submodule updated.                                   |
 | 2.1.1   | 14.12.2023   | - Virtual destructor added.<br />- Frame submodule updated.  |
-| 2.1.2   | 14.12.2023   | - Frame submodule updated.<br />- Documentation updated.  |
+| 2.1.2   | 14.12.2023   | - Frame submodule updated.<br />- Documentation updated.     |
+| 2.1.3   | 25.04.2024   | - Documentation updated.                                     |
 
 
 
@@ -57,11 +54,11 @@ The library supplied by source code only. The user would be given a set of files
 
 ```xml
 CMakeLists.txt ---------------- Main CMake file of the library.
-3rdparty ---------------------- Folder with 3rdparty libraries.
-    CMakeLists.txt ------------ CMake file to include 3rdparty libraries.
+3rdparty ---------------------- Folder with third-party libraries.
+    CMakeLists.txt ------------ CMake file to include third-party libraries.
     Frame --------------------- Folder with Frame library files.
 src --------------------------- Folder with library source code.
-    CMakeLists.txt ------------ CMake file.
+    CMakeLists.txt ------------ CMake file of the library.
     VCodec.h ------------------ Main library header file.
     VCodecVersion.h ----------- Header file with library version.
     VCodecVersion.h.in -------- File for CMake to generate version header.
@@ -122,7 +119,7 @@ std::cout << "VCodec class version: " << VCodec::getVersion() << std::endl;
 Console output:
 
 ```bash
-VCodec class version: 2.1.2
+VCodec class version: 2.1.3
 ```
 
 
