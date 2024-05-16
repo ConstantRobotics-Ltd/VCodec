@@ -73,7 +73,7 @@ public:
      * @brief Encode/decode.
      * @param src Source frame (RAW or compressed).
      * @param dst Result frame (RAW or compressed).
-     * @return TRUE if frame was processed or FLASE if not.
+     * @return TRUE if frame was processed or FALSE if not.
      */
     virtual bool transcode(Frame& src, Frame& dst) = 0;
 
@@ -101,7 +101,3 @@ public:
 };
 }
 }
-
-
-
-

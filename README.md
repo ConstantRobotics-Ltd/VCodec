@@ -1,10 +1,10 @@
-![vcodec_web_logo](_static/vcodec_web_logo.png)
+![vcodec_web_logo](./static/vcodec_web_logo.png)
 
 
 
 # **VCodec interface C++ library**
 
-**v2.1.3**
+**v2.1.4**
 
 
 
@@ -28,7 +28,7 @@
 
 # Overview
 
-**VCodec** C++ library provides standard interface as well defines data structures and rules for different video codec classes (video encoding and decoding). **VCodec** interface class doesn't do anything, just provides interface. Different video codec classes inherit interface form **VCodec** C++ class. **VCodec.h** file contains **VCodecCommand** enum, **VCodecParam** enum and **VCodec** class declaration. **VCodecCommands** enum contains IDs of commands supported by **VCodec** class. **VCodecParam** enum contains IDs of params supported by **VCodec** class. All video codec should include params and commands listed in **VCodec.h** file. **VCodec** class depends on [Frame](https://github.com/ConstantRobotics-Ltd/Frame) class which determines video frame structure. Video codec interface supports only 8 bit depth input pixels. It uses C++17 standard. The library is licensed under the **Apache 2.0** license.
+**VCodec** C++ library provides standard interface as well defines data structures and rules for different video codec classes (video encoding and decoding). **VCodec** interface class doesn't do anything, just provides interface. Different video codec classes inherit interface form **VCodec** C++ class. **VCodec.h** file contains **VCodecCommand** enum, **VCodecParam** enum and **VCodec** class declaration. **VCodecCommands** enum contains IDs of commands supported by **VCodec** class. **VCodecParam** enum contains IDs of params supported by **VCodec** class. All video codec should include params and commands listed in **VCodec.h** file. **VCodec** class depends on [Frame](https://rapidpixel.constantrobotics.com/docs/service-libraries/frame.html) class which determines video frame structure. Video codec interface supports only 8 bit depth input pixels. It uses C++17 standard. The library is licensed under the **Apache 2.0** license.
 
 
 
@@ -45,6 +45,7 @@
 | 2.1.1   | 14.12.2023   | - Virtual destructor added.<br />- Frame submodule updated.  |
 | 2.1.2   | 14.12.2023   | - Frame submodule updated.<br />- Documentation updated.     |
 | 2.1.3   | 25.04.2024   | - Documentation updated.                                     |
+| 2.1.4   | 16.05.2024   | - Documentation updated.<br />- Frame submodule updated.     |
 
 
 
@@ -53,16 +54,16 @@
 The library supplied by source code only. The user would be given a set of files in the form of a CMake project (repository). The repository structure is shown below:
 
 ```xml
-CMakeLists.txt ---------------- Main CMake file of the library.
-3rdparty ---------------------- Folder with third-party libraries.
-    CMakeLists.txt ------------ CMake file to include third-party libraries.
-    Frame --------------------- Folder with Frame library files.
-src --------------------------- Folder with library source code.
-    CMakeLists.txt ------------ CMake file of the library.
-    VCodec.h ------------------ Main library header file.
-    VCodecVersion.h ----------- Header file with library version.
-    VCodecVersion.h.in -------- File for CMake to generate version header.
-    VCodec.cpp ---------------- C++ implementation file.
+CMakeLists.txt ---------- Main CMake file of the library.
+3rdparty ---------------- Folder with third-party libraries.
+    CMakeLists.txt ------ CMake file to include third-party libraries.
+    Frame --------------- Folder with Frame library files.
+src --------------------- Folder with library source code.
+    CMakeLists.txt ------ CMake file of the library.
+    VCodec.h ------------ Main library header file.
+    VCodecVersion.h ----- Header file with library version.
+    VCodecVersion.h.in -- File for CMake to generate version header.
+    VCodec.cpp ---------- C++ implementation file.
 ```
 
 
@@ -119,14 +120,14 @@ std::cout << "VCodec class version: " << VCodec::getVersion() << std::endl;
 Console output:
 
 ```bash
-VCodec class version: 2.1.3
+VCodec class version: 2.1.4
 ```
 
 
 
 ## transcode method
 
-The **transcode(...)** method intended to encode and decode video frame ([Frame](https://github.com/ConstantRobotics-Ltd/Frame) class). Video codec encode/decode video frames frame-by-frame. Method declaration:
+The **transcode(...)** method intended to encode and decode video frame ([Frame](https://rapidpixel.constantrobotics.com/docs/service-libraries/frame.html) class). Video codec encodes / decodes video frame-by-frame. Method declaration:
 
 ```cpp
 virtual bool transcode(Frame& src, Frame& dst) = 0;
@@ -134,8 +135,8 @@ virtual bool transcode(Frame& src, Frame& dst) = 0;
 
 | Parameter | Value                                                        |
 | --------- | ------------------------------------------------------------ |
-| src       | Source video frame (see [Frame](https://github.com/ConstantRobotics-Ltd/Frame) class description). To encode video data **src** frame must have RAW pixel data (field **fourcc** of **Frame** class): **RGB24**, **BGR24**, **YUYV**, **UYVY**, **GRAY**, **YUV24**, **NV12**, **NV21**, **YU12** or **YV12**. To decode video data **src** frame must have compressed pixel format (field **fourcc** of **Frame** class): **JPEG**, **H264** or **HEVC**. Particular video codec can support limited RAW input pixel format or only one. When it possible video codec should accept all supported RAW pixel formats and should do pixel format conversion inside if it necessary. Also, particular video codec can support all, few or just one compressed pixel format. When it possible video code should support all compressed pixel format to encode/decode. |
-| dst       | Result video frame (see **Frame** class description). To decode video data **src** frame must have compressed pixel format (field **fourcc** of **Frame** class): **JPEG**, **H264** or **HEVC**. In case decoding particular video codec can set output pixel format automatically. To encode video frame user must set **fourcc** field of dst frame to necessary output compressed format: **JPEG**, **H264** or **HEVC**. The method will write decoded frame data (RAW pixel format) to **data** filed of **src** frame in case decoding or will write compressed data in case encoding. |
+| src       | Source video frame (see [Frame](https://rapidpixel.constantrobotics.com/docs/service-libraries/frame.html) class description). To encode video data **src** frame must have RAW pixel data (field **fourcc** of **Frame** class): **RGB24**, **BGR24**, **YUYV**, **UYVY**, **GRAY**, **YUV24**, **NV12** (default format for codec), **NV21**, **YU12** or **YV12**. To decode video data **src** frame must have compressed pixel format (field **fourcc** of **Frame** class): **JPEG**, **H264** or **HEVC**. Particular video codec can support limited RAW input pixel format or only one (usually only **NV12**). When it possible video codec should accept all supported RAW pixel formats and should do pixel format conversion inside if it necessary. Also, particular video codec can support all, few or just one compressed pixel format. When it possible video code should support all compressed pixel format to encode / decode. |
+| dst       | Result video frame (see [Frame](https://rapidpixel.constantrobotics.com/docs/service-libraries/frame.html) class description). To decode video data **src** frame must have compressed pixel format (field **fourcc** of **Frame** class): **JPEG**, **H264** or **HEVC**. In case decoding particular video codec can set output pixel format automatically. To encode video frame user must set **fourcc** field of dst frame to necessary output compressed format: **JPEG**, **H264** or **HEVC**. The method will write decoded frame data (RAW pixel format) to **data** filed of **src** frame in case decoding or will write compressed data in case encoding. |
 
 **Returns:** TRUE if frame was encoded/decoded or FALSE if not.
 

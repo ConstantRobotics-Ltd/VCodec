@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.13)
 ## LIBRARY-PROJECT
 ## name and version
 ###############################################################################
-project(VCodec VERSION 2.1.2 LANGUAGES CXX)
+project(VCodec VERSION 2.1.4 LANGUAGES CXX)
 
 
 
