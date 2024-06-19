@@ -42,7 +42,7 @@ file (GLOB_RECURSE HPP_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
 set  (SOURCES ${CPP_FILES} ${H_FILES})
 # create lib from src
 if (NOT TARGET ${PROJECT_NAME})
-    add_library(${PROJECT_NAME} STATIC ${SOURCES})
+    add_library(${PROJECT_NAME} ${SOURCES})
 endif()
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -52,6 +52,4 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 ## LINK LIBRARIES
 ## linking all dependencies
 ###############################################################################
-target_link_libraries(${PROJECT_NAME} Frame)
-
-
+target_link_libraries(${PROJECT_NAME} Frame)0
