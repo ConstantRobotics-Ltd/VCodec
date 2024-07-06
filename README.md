@@ -4,7 +4,7 @@
 
 # **VCodec interface C++ library**
 
-**v2.1.4**
+**v2.1.5**
 
 
 
@@ -13,8 +13,8 @@
 - [Overview](#overview)
 - [Versions](#versions)
 - [Library files](#library-files)
-- [Video codec interface class description](#video-codec-interface-class-description)
-  - [Class declaration](#class-declaration)
+- [VCodec interface class description](#VCodec-interface-class-description)
+  - [VCodec interface class declaration](#VCodec-interface-class-declaration)
   - [transcode method](#transcode-method)
   - [setParam method](#setparam-method)
   - [getParam method](#getparam-method)
@@ -28,7 +28,7 @@
 
 # Overview
 
-**VCodec** C++ library provides standard interface as well defines data structures and rules for different video codec classes (video encoding and decoding). **VCodec** interface class doesn't do anything, just provides interface. Different video codec classes inherit interface form **VCodec** C++ class. **VCodec.h** file contains **VCodecCommand** enum, **VCodecParam** enum and **VCodec** class declaration. **VCodecCommands** enum contains IDs of commands supported by **VCodec** class. **VCodecParam** enum contains IDs of params supported by **VCodec** class. All video codec should include params and commands listed in **VCodec.h** file. **VCodec** class depends on [Frame](https://rapidpixel.constantrobotics.com/docs/service-libraries/frame.html) class which determines video frame structure. Video codec interface supports only 8 bit depth input pixels. It uses C++17 standard. The library is licensed under the **Apache 2.0** license.
+**VCodec** C++ library provides standard interface as well defines data structures and rules for different video codecs (video encoding and decoding). **VCodec** interface class does nothing, just provides interface. Different video codec classes inherit interface form **VCodec** C++ class. **VCodec.h** file contains **VCodecCommand** enum, **VCodecParam** enum and **VCodec** class declaration. **VCodecCommands** enum contains IDs of commands supported by **VCodec** class. **VCodecParam** enum contains IDs of params supported by **VCodec** class. All video codecs should include all params and commands listed in **VCodec.h** file. **VCodec** class depends on [Frame](https://rapidpixel.constantrobotics.com/docs/service-libraries/frame.html) class which determines video frame structures. Video codec interface supports only 8 bit depth input pixel format. It uses C++17 standard. The library is licensed under the **Apache 2.0** license.
 
 
 
@@ -46,6 +46,7 @@
 | 2.1.2   | 14.12.2023   | - Frame submodule updated.<br />- Documentation updated.     |
 | 2.1.3   | 25.04.2024   | - Documentation updated.                                     |
 | 2.1.4   | 16.05.2024   | - Documentation updated.<br />- Frame submodule updated.     |
+| 2.1.5   | 06.07.2024   | - Frame class updated.<br />- CMake updated.                 |
 
 
 
@@ -68,11 +69,11 @@ src --------------------- Folder with library source code.
 
 
 
-# Video codec interface class description
+# VCodec interface class description
 
 
 
-## Class declaration
+## VCodec interface class declaration
 
 **VCodec** interface class declared in **VCodec.h** file. Class declaration:
 
@@ -120,7 +121,7 @@ std::cout << "VCodec class version: " << VCodec::getVersion() << std::endl;
 Console output:
 
 ```bash
-VCodec class version: 2.1.4
+VCodec class version: 2.1.5
 ```
 
 
@@ -216,7 +217,7 @@ enum class VCodecCommand
 | Command        | Description                                                  |
 | -------------- | ------------------------------------------------------------ |
 | RESET          | Reset video codec.                                           |
-| MAKE_KEY_FRAME | Command to generate key frame for H264 or H265(HEVC) encoding. |
+| MAKE_KEY_FRAME | Command to generate key frame for H264 or H265(HEVC) codecs. |
 
 
 
@@ -273,7 +274,6 @@ enum class VCodecParam
 Typical commands to build **VCodec** library:
 
 ```bash
-git clone https://github.com/ConstantRobotics-Ltd/VCodec.git
 cd VCodec
 git submodule update --init --recursive
 mkdir build
@@ -300,7 +300,7 @@ git submodule add https://github.com/ConstantRobotics-Ltd/VCodec.git 3rdparty/VC
 git submodule update --init --recursive
 ```
 
-In you repository folder will be created folder **3rdparty/VCodec** which contains files of **VCodec** repository with subrepositories **Frame**. New structure of your repository:
+In you repository folder will be created folder **3rdparty/VCodec** which contains files of **VCodec** repository with sub-repositories **Frame**. Also you can copy **VCodec** repository folder to **3rdparty** folder of your repository. New structure of your repository:
 
 ```bash
 CMakeLists.txt
@@ -333,21 +333,10 @@ SET(PARENT ${PARENT}_YOUR_PROJECT_3RDPARTY)
 SET(${PARENT}_SUBMODULE_CACHE_OVERWRITE OFF CACHE BOOL "" FORCE)
 
 ################################################################################
-## CONFIGURATION
-## 3rd-party submodules configuration
-################################################################################
-SET(${PARENT}_SUBMODULE_VCODEC                          ON  CACHE BOOL "" FORCE)
-if (${PARENT}_SUBMODULE_VCODEC)
-    SET(${PARENT}_VCODEC                                ON  CACHE BOOL "" FORCE)
-endif()
-
-################################################################################
 ## INCLUDING SUBDIRECTORIES
 ## Adding subdirectories according to the 3rd-party configuration
 ################################################################################
-if (${PARENT}_SUBMODULE_VCODEC)
-    add_subdirectory(VCodec)
-endif()
+add_subdirectory(VCodec)
 ```
 
 File **3rdparty/CMakeLists.txt** adds folder **VCodec** to your project. Your repository new structure will be:

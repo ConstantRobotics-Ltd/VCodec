@@ -23,6 +23,11 @@ else()
     SET(REWRITE_FORCE "")
 endif()
 
+# Set default Release mode if not specified
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type defaulting to Release" FORCE)
+endif()
+
 
 
 ################################################################################
