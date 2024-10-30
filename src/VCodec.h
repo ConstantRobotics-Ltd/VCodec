@@ -13,11 +13,16 @@ namespace video
  */
 enum class VCodecParam
 {
-    /// [read/write] Log level:
-    /// 0-Disable, 1-Console, 2-File, 3-Console and file.
+    /// [read/write] Log level: 0-Disable, 1-Console, 2-File, 3-Console and file.
     LOG_LEVEL = 1,
     /// [read/write] Bitrate, kbps. For H264 and H265 codecs.
     BITRATE_KBPS,
+    /// [read/write] Minimum bitrate, kbps. For variable bitrate mode.
+    MIN_BITRATE_KBPS,
+    /// [read/write] Maximum bitrate, kbps. For variable bitrate mode.
+    MAX_BITRATE_KBPS,
+    /// [read/write] Bitrate mode: 0 - constant bitrate, 1 - variable bitrate.
+    BITRATE_MODE,
     /// [read/write] Quality 0-100%. For JPEG codecs.
     QUALITY,
     /// [read/write] FPS. For H264 and H265 codecs.

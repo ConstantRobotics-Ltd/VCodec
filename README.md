@@ -4,7 +4,7 @@
 
 # **VCodec interface C++ library**
 
-**v2.1.5**
+**v2.2.0**
 
 
 
@@ -47,6 +47,7 @@
 | 2.1.3   | 25.04.2024   | - Documentation updated.                                     |
 | 2.1.4   | 16.05.2024   | - Documentation updated.<br />- Frame submodule updated.     |
 | 2.1.5   | 06.07.2024   | - Frame class updated.<br />- CMake updated.                 |
+| 2.2.0   | 30.10.2024   | - Add new bitrate parameters.                                |
 
 
 
@@ -226,13 +227,22 @@ enum class VCodecCommand
 Enum declaration:
 
 ```cpp
+namespace cr
+{
+namespace video
+{
 enum class VCodecParam
 {
-    /// [read/write] Log level:
-    /// 0-Disable, 1-Console, 2-File, 3-Console and file.
+    /// [read/write] Log level: 0-Disable, 1-Console, 2-File, 3-Console and file.
     LOG_LEVEL = 1,
     /// [read/write] Bitrate, kbps. For H264 and H265 codecs.
     BITRATE_KBPS,
+    /// [read/write] Minimum bitrate, kbps. For variable bitrate mode.
+    MIN_BITRATE_KBPS,
+    /// [read/write] Maximum bitrate, kbps. For variable bitrate mode.
+    MAX_BITRATE_KBPS,
+    /// [read/write] Bitrate mode: 0 - constant bitrate, 1 - variable bitrate.
+    BITRATE_MODE,
     /// [read/write] Quality 0-100%. For JPEG codecs.
     QUALITY,
     /// [read/write] FPS. For H264 and H265 codecs.
@@ -250,22 +260,27 @@ enum class VCodecParam
     /// Custom 3. Depends on implementation.
     CUSTOM_3
 };
+}
+}
 ```
 
 **Table 3** - Video codec params description. Some params maybe unsupported by particular video codec class.
 
-| Parameter    | Access       | Description                                                  |
-| ------------ | ------------ | ------------------------------------------------------------ |
-| LOG_LEVEL    | read / write | Logging mode. Default values:<br/>0 - Disable.<br/>1 - Only file.<br/>2 - Only terminal.<br/>3 - File and terminal. |
-| BITRATE_KBPS | read / write | Bitrate, kbps. For H264 and H265(HEVC) encoding. According to this value, FPS and GOP size video codec calculate parameter for H264 or H265(HEVC) encoding. |
-| QUALITY      | read / write | Quality 0(low quality)-100%(maximum quality). For JPEG encoding. |
-| FPS          | read / write | FPS. For H264 and H265 codecs. According to this value, FPS and GOP size video codec calculate parameter for H264 or H265(HEVC) encoding. |
-| GOP          | read / write | GOP size (Period of key frames) for H264 or H265(HEVC) encoding. Value: 1 - each output frame is key frame, 20 - each 20th frame is key frame etc. |
-| H264_PROFILE | read / write | H264 profile for H264 encoding: 0 - Baseline, 1 - Main, 2 - High. |
-| TYPE         | read / write | Codec type. Depends on implementation. It can be type of backend. Some codecs may not support this parameter. |
-| CUSTOM_1     | read / write | Custom parameter. Depends on particular implementation.      |
-| CUSTOM_2     | read / write | Custom parameter. Depends on particular implementation.      |
-| CUSTOM_3     | read / write | Custom parameter. Depends on particular implementation.      |
+| Parameter        | Access       | Description                                                  |
+| ---------------- | ------------ | ------------------------------------------------------------ |
+| LOG_LEVEL        | read / write | Logging mode. Default values:<br/>0 - Disable.<br/>1 - Only file.<br/>2 - Only terminal.<br/>3 - File and terminal. |
+| BITRATE_KBPS     | read / write | Bitrate, kbps. For H264 and H265(HEVC) encoding. According to this value, FPS and GOP size video codec calculate parameter for H264 or H265(HEVC) encoding. |
+| MIN_BITRATE_KBPS | read / write | Minimum bitrate, kbps. For variable bitrate mode. For H264 and H265(HEVC) encoding. |
+| MAX_BITRATE_KBPS | read / write | Maximum bitrate, kbps. For variable bitrate mode. For H264 and H265(HEVC) encoding. |
+| BITRATE_MODE     | read / write | Bitrate mode: 0 - constant bitrate, 1 - variable bitrate.    |
+| QUALITY          | read / write | Quality 0(low quality)-100%(maximum quality). For JPEG encoding. |
+| FPS              | read / write | FPS. For H264 and H265 codecs. According to this value, FPS and GOP size video codec calculate parameter for H264 or H265(HEVC) encoding. |
+| GOP              | read / write | GOP size (Period of key frames) for H264 or H265(HEVC) encoding. Value: 1 - each output frame is key frame, 20 - each 20th frame is key frame etc. |
+| H264_PROFILE     | read / write | H264 profile for H264 encoding: 0 - Baseline, 1 - Main, 2 - High. |
+| TYPE             | read / write | Codec type. Depends on implementation. It can be type of backend. Some codecs may not support this parameter. |
+| CUSTOM_1         | read / write | Custom parameter. Depends on particular implementation.      |
+| CUSTOM_2         | read / write | Custom parameter. Depends on particular implementation.      |
+| CUSTOM_3         | read / write | Custom parameter. Depends on particular implementation.      |
 
 
 
