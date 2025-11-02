@@ -16,7 +16,7 @@ VCodec::~VCodec()
 
 
 
-/// Get string of current library version.
+/// Get string of the current library version.
 std::string VCodec::getVersion()
 {
     return VCODEC_VERSION;

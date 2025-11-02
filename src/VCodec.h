@@ -1,5 +1,6 @@
 #pragma once
 #include "Frame.h"
+#include <string>
 
 
 
@@ -33,11 +34,11 @@ enum class VCodecParam
     H264_PROFILE,
     /// [read/write] Codec type. Depends on implementation.
     TYPE,
-    /// Custom 1. Depends on implementation.
+    /// [read/write] Custom parameter 1. Depends on implementation.
     CUSTOM_1,
-    /// Custom 2. Depends on implementation.
+    /// [read/write] Custom parameter 2. Depends on implementation.
     CUSTOM_2,
-    /// Custom 3. Depends on implementation.
+    /// [read/write] Custom parameter 3. Depends on implementation.
     CUSTOM_3
 };
 
@@ -69,8 +70,8 @@ public:
     virtual ~VCodec();
 
     /**
-     * @brief Get string of current library version.
-     * @return String of current library version in format "Major.Minor.Patch".
+     * @brief Get string of the current library version.
+     * @return String of the current library version in format "Major.Minor.Patch".
      */
     static std::string getVersion();
 
@@ -86,7 +87,7 @@ public:
      * @brief Set parameter.
      * @param id Parameter ID.
      * @param value Parameter value to set.
-     * @return TRUE if parameter was set of FALSE.
+     * @return TRUE if parameter was set or FALSE.
      */
     virtual bool setParam(VCodecParam id, float value) = 0;
 
@@ -99,8 +100,8 @@ public:
 
     /**
      * @brief Execute command.
-     * @param id Command ID .
-     * @return TRUE if the command accepted or FALSE if not.
+     * @param id Command ID.
+     * @return TRUE if the command is accepted or FALSE if not.
      */
     virtual bool executeCommand(VCodecCommand id) = 0;
 };
