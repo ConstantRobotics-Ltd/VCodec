@@ -4,7 +4,7 @@
 
 # **VCodec interface C++ library**
 
-**v2.2.2**
+**v2.2.3**
 
 
 
@@ -15,6 +15,7 @@
 - [Library files](#library-files)
 - [VCodec interface class description](#vcodec-interface-class-description)
   - [VCodec interface class declaration](#vcodec-interface-class-declaration)
+  - [getVersion method](#getversion-method)
   - [transcode method](#transcode-method)
   - [setParam method](#setparam-method)
   - [getParam method](#getparam-method)
@@ -50,6 +51,7 @@ The **VCodec** C++ library provides a standard interface and defines data struct
 | 2.2.0   | 30.10.2024   | - Add new bitrate parameters.                                |
 | 2.2.1   | 02.11.2025   | - Fix code mistakes.<br />- Fix documentation mistakes.      |
 | 2.2.2   | 07.10.2026   | - Added compiler options.<br/>- Frame submodule updated. |
+| 2.2.3   | 15.10.2026   | - Compiler options fixed: warnings and exploit mitigation options are applied to the library target.<br/>- Protected constructors and assignment operators added to the interface class.<br/>- Documentation updated. |
 
 
 
@@ -102,8 +104,27 @@ public:
 
     /// Execute command.
     virtual bool executeCommand(VCodecCommand id) = 0;
+
+protected:
+
+    /// Default constructor. The class can be used as a base only.
+    VCodec() = default;
+
+    /// Copy constructor.
+    VCodec(const VCodec& src) = default;
+
+    /// Move constructor.
+    VCodec(VCodec&& src) = default;
+
+    /// Copy assignment operator.
+    VCodec& operator=(const VCodec& src) = default;
+
+    /// Move assignment operator.
+    VCodec& operator=(VCodec&& src) = default;
 };
 ```
+
+The constructors and the assignment operators of the **VCodec** class are protected: objects are created, copied and moved only as objects of a particular video codec class. Thread safety of the methods is defined by the particular video codec class.
 
 
 
@@ -118,13 +139,13 @@ static std::string getVersion();
 This method can be used without a **VCodec** class instance:
 
 ```cpp
-std::cout << "VCodec class version: " << VCodec::getVersion() << std::endl;
+std::cout << "VCodec class version: " << cr::video::VCodec::getVersion() << std::endl;
 ```
 
 Console output:
 
 ```bash
-VCodec class version: 2.2.1
+VCodec class version: 2.2.3
 ```
 
 
@@ -142,7 +163,9 @@ virtual bool transcode(Frame& src, Frame& dst) = 0;
 | src       | Source video frame (see [Frame](https://rapidpixel.constantrobotics.com/docs/Service/Frame.html) class description). To encode video data, the **src** frame must have RAW pixel data (field **fourcc** of **Frame** class): **RGB24**, **BGR24**, **YUYV**, **UYVY**, **GRAY**, **YUV24**, **NV12** (default format for codec), **NV21**, **YU12**, or **YV12**. To decode video data, the **src** frame must have compressed pixel format (field **fourcc** of **Frame** class): **JPEG**, **H264**, or **HEVC**. A particular video codec can support a limited RAW input pixel format or only one (usually only **NV12**). When possible, the video codec should accept all supported RAW pixel formats and should do pixel format conversion internally if necessary. Also, a particular video codec can support all, few, or just one compressed pixel format. When possible, the video codec should support all compressed pixel formats to encode/decode. |
 | dst       | Result video frame (see [Frame](https://rapidpixel.constantrobotics.com/docs/Service/Frame.html) class description). For decoding, the output pixel format can be set automatically by the particular video codec. To encode a video frame, the user must set the **fourcc** field of the dst frame to the necessary output compressed format: **JPEG**, **H264**, or **HEVC**. The method will write decoded frame data (RAW pixel format) to the **data** field of the **dst** frame in case of decoding or will write compressed data in case of encoding. |
 
-**Returns:** TRUE if frame was encoded/decoded or FALSE if not.
+The data of the **src** frame can come from outside: the particular video codec must check the source frame (pixel format, size of the data, frame dimensions) before use.
+
+**Returns:** TRUE if frame was encoded/decoded or FALSE if not. If FALSE is returned, the content of the **dst** frame is defined by the particular video codec.
 
 
 
@@ -158,6 +181,8 @@ virtual bool setParam(VCodecParam id, float value) = 0;
 | --------- | ----------------------------------------------------------- |
 | id        | Video codec parameter ID according to [VCodecParam](#vcodecparam-enum) enum. |
 | value     | Video codec parameter value.                                |
+
+The interface does not check the arguments: the particular video codec must reject a parameter ID that it does not support (also a value outside of the [VCodecParam](#vcodecparam-enum) enum) and must check the value (range, NaN, infinity) before use.
 
 **Returns:** TRUE if the parameter was set or FALSE if not.
 
@@ -175,7 +200,7 @@ virtual float getParam(VCodecParam id) = 0;
 | --------- | ----------------------------------------------------------- |
 | id        | Video codec parameter ID according to [VCodecParam](#vcodecparam-enum) enum. |
 
-**Returns:** Parameter value or -1 if the parameter doesn't exist in the particular video codec class.
+**Returns:** Parameter value or -1 if the particular video codec does not support the parameter.
 
 
 
@@ -191,7 +216,9 @@ virtual bool executeCommand(VCodecCommand id) = 0;
 | --------- | ----------------------------------------------------------- |
 | id        | Video codec command ID according to [VCodecCommand](#vcodeccommand-enum) enum. |
 
-**Returns:** TRUE if the command was executed or FALSE if not.
+The interface does not check the command ID: the particular video codec must reject a command ID that it does not support (also a value outside of the [VCodecCommand](#vcodeccommand-enum) enum).
+
+**Returns:** TRUE if the command was accepted or FALSE if not.
 
 
 
@@ -235,7 +262,8 @@ namespace video
 {
 enum class VCodecParam
 {
-    /// [read/write] Log level: 0-Disable, 1-Console, 2-File, 3-Console and file.
+    /// [read/write] Log level: 0 - Disable, 1 - Console, 2 - File,
+    /// 3 - Console and file.
     LOG_LEVEL = 1,
     /// [read/write] Bitrate, kbps. For H264 and H265 codecs.
     BITRATE_KBPS,
@@ -270,7 +298,7 @@ enum class VCodecParam
 
 | Parameter        | Access       | Description                                                  |
 | ---------------- | ------------ | ------------------------------------------------------------ |
-| LOG_LEVEL        | read / write | Logging mode. Default values:<br/>0 - Disable.<br/>1 - Only file.<br/>2 - Only terminal.<br/>3 - File and terminal. |
+| LOG_LEVEL        | read / write | Logging mode. Values:<br/>0 - Disable.<br/>1 - Console.<br/>2 - File.<br/>3 - Console and file. |
 | BITRATE_KBPS     | read / write | Bitrate, kbps. For H264 and H265(HEVC) encoding. According to this value, FPS, and GOP size, the video codec calculates parameters for H264 or H265(HEVC) encoding. |
 | MIN_BITRATE_KBPS | read / write | Minimum bitrate, kbps. For variable bitrate mode. For H264 and H265(HEVC) encoding. |
 | MAX_BITRATE_KBPS | read / write | Maximum bitrate, kbps. For variable bitrate mode. For H264 and H265(HEVC) encoding. |
@@ -304,7 +332,7 @@ If you want to connect the **VCodec** library to your CMake project as source co
 ```bash
 CMakeLists.txt
 src
-    CMakeList.txt
+    CMakeLists.txt
     yourLib.h
     yourLib.cpp
 ```
@@ -312,7 +340,7 @@ src
 You can add the **VCodec** repository as a submodule with the following commands:
 
 ```bash
-cd <your respository folder>
+cd <your repository folder>
 git submodule add https://github.com/ConstantRobotics-Ltd/VCodec.git 3rdparty/VCodec
 git submodule update --init --recursive
 ```
@@ -322,7 +350,7 @@ In your repository folder, a **3rdparty/VCodec** folder will be created, which c
 ```bash
 CMakeLists.txt
 src
-    CMakeList.txt
+    CMakeLists.txt
     yourLib.h
     yourLib.cpp
 3rdparty
@@ -361,7 +389,7 @@ The **3rdparty/CMakeLists.txt** file adds the **VCodec** folder to your project.
 ```bash
 CMakeLists.txt
 src
-    CMakeList.txt
+    CMakeLists.txt
     yourLib.h
     yourLib.cpp
 3rdparty
