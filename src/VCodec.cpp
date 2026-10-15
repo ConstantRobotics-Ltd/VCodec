@@ -1,45 +1,14 @@
 #include "VCodec.h"
 #include "VCodecVersion.h"
+#include <string>
 
 
 
-// Link namespaces.
-using namespace std;
-using namespace cr::video;
+cr::video::VCodec::~VCodec() = default;
 
 
 
-VCodec::~VCodec()
-{
-
-}
-
-
-
-/// Get string of the current library version.
-std::string VCodec::getVersion()
+std::string cr::video::VCodec::getVersion()
 {
     return VCODEC_VERSION;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
