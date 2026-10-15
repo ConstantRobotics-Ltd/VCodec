@@ -43,6 +43,12 @@ SET(${PARENT}_VCODEC                         ON  CACHE BOOL "" ${REWRITE_FORCE})
 ## Adding subdirectories according to the project configuration
 ################################################################################
 if (${PARENT}_VCODEC)
-    add_subdirectory(3rdparty)
+    # If this project is a stand alone repository, its dependency is expected
+    # to be next to it (../Frame) and is added first. If this project is
+    # included in another one, the top-level CMakeLists.txt must add this
+    # library by itself.
+    if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+        add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../Frame ${CMAKE_CURRENT_BINARY_DIR}/Frame)
+    endif()
     add_subdirectory(src)
 endif()

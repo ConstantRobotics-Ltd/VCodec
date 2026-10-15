@@ -24,6 +24,9 @@
   - [VCodecCommand enum](#vcodeccommand-enum)
   - [VCodecParam enum](#vcodecparam-enum)
 - [Build and connect to your project](#build-and-connect-to-your-project)
+  - [Build stand alone](#build-stand-alone)
+  - [CMake options](#cmake-options)
+  - [Connect to your project](#connect-to-your-project)
 
 
 
@@ -51,7 +54,7 @@ The **VCodec** C++ library provides a standard interface and defines data struct
 | 2.2.0   | 30.10.2024   | - Add new bitrate parameters.                                |
 | 2.2.1   | 02.11.2025   | - Fix code mistakes.<br />- Fix documentation mistakes.      |
 | 2.2.2   | 07.10.2026   | - Added compiler options.<br/>- Frame submodule updated. |
-| 2.2.3   | 15.10.2026   | - Compiler options fixed: warnings and exploit mitigation options are applied to the library target.<br/>- Protected constructors and assignment operators added to the interface class.<br/>- Documentation updated. |
+| 2.2.3   | 15.10.2026   | - Compiler options fixed: warnings and exploit mitigation options are applied to the library target.<br/>- Protected constructors and assignment operators added to the interface class.<br/>- Frame submodule removed: the Frame library is added by the top-level project or from the folder next to the repository.<br/>- Documentation updated. |
 
 
 
@@ -61,9 +64,6 @@ The library is supplied as source code only. The user is provided with a set of 
 
 ```xml
 CMakeLists.txt ---------- Main CMake file of the library.
-3rdparty ---------------- Folder with third-party libraries.
-    CMakeLists.txt ------ CMake file to include third-party libraries.
-    Frame --------------- Folder with Frame library files.
 src --------------------- Folder with library source code.
     CMakeLists.txt ------ CMake file of the library.
     VCodec.h ------------ Main library header file.
@@ -316,18 +316,48 @@ enum class VCodecParam
 
 # Build and connect to your project
 
-Typical commands to build **VCodec** library:
+## Build stand alone
+
+The repository does not contain sub-repositories. The library **VCodec** depends on (**Frame**) must be cloned into the same folder as **VCodec**. The folder structure must be:
 
 ```bash
+<work folder>
+    VCodec
+    Frame
+```
+
+Typical commands to build the library (use the URLs of the repositories provided to you):
+
+```bash
+git clone <VCodec repository URL>
+git clone <Frame repository URL>
 cd VCodec
-git submodule update --init --recursive
 mkdir build
 cd build
 cmake ..
 make
 ```
 
-If you want to connect the **VCodec** library to your CMake project as source code, you can do the following. For example, if your repository has the structure:
+On Windows use `cmake --build . --config Release` instead of `make`. If **VCodec** is the top-level CMake project, the main CMakeLists.txt file adds the folder ../Frame before the library itself. If the folder does not exist, the CMake configuration fails with an error.
+
+
+
+## CMake options
+
+**Table 4** - CMake options of the repository. In the options below ${PARENT} is the prefix defined by the top-level project (empty if **VCodec** is the top-level project).
+
+| Option                              | Default                    | Description |
+| ----------------------------------- | -------------------------- | ----------- |
+| ${PARENT}_VCODEC                    | ON                         | Build the library. |
+| ${PARENT}_SUBMODULE_CACHE_OVERWRITE | ON                         | Forced rewriting of the option above in the CMake cache. The top-level project sets it to OFF when it includes **VCodec** as a sub-repository. |
+| CMAKE_BUILD_TYPE                    | Release (if not specified) | Build type. |
+| BUILD_SHARED_LIBS                   | OFF (not defined)          | Standard CMake variable: ON builds the libraries as dynamic libraries. |
+
+
+
+## Connect to your project
+
+If you want to connect the **VCodec** library to your CMake project as source code, you can do the following. The **VCodec** library does not add its dependency when it is included in another CMake project: your project must add the **Frame** library. For example, if your repository has the structure:
 
 ```bash
 CMakeLists.txt
@@ -337,27 +367,15 @@ src
     yourLib.cpp
 ```
 
-You can add the **VCodec** repository as a submodule with the following commands:
+You can add the **Frame** and **VCodec** repositories as sub-repositories with the following commands (use the URLs of the repositories provided to you):
 
 ```bash
 cd <your repository folder>
-git submodule add https://github.com/ConstantRobotics-Ltd/VCodec.git 3rdparty/VCodec
-git submodule update --init --recursive
+git submodule add <Frame repository URL> 3rdparty/Frame
+git submodule add <VCodec repository URL> 3rdparty/VCodec
 ```
 
-In your repository folder, a **3rdparty/VCodec** folder will be created, which contains files of the **VCodec** repository with the **Frame** sub-repository. Alternatively, you can copy the **VCodec** repository folder to the **3rdparty** folder of your repository. The new structure of your repository:
-
-```bash
-CMakeLists.txt
-src
-    CMakeLists.txt
-    yourLib.h
-    yourLib.cpp
-3rdparty
-    VCodec
-```
-
-Create a CMakeLists.txt file in the **3rdparty** folder. The CMakeLists.txt file should contain:
+In your repository folder, the **3rdparty/Frame** and **3rdparty/VCodec** folders will be created. Alternatively, you can copy the **Frame** and **VCodec** repository folders to the **3rdparty** folder of your repository. Create a CMakeLists.txt file in the **3rdparty** folder. The CMakeLists.txt file should contain:
 
 ```cmake
 cmake_minimum_required(VERSION 3.13)
@@ -378,13 +396,34 @@ SET(PARENT ${PARENT}_YOUR_PROJECT_3RDPARTY)
 SET(${PARENT}_SUBMODULE_CACHE_OVERWRITE OFF CACHE BOOL "" FORCE)
 
 ################################################################################
+## CONFIGURATION
+## 3rd-party submodules configuration
+################################################################################
+SET(${PARENT}_SUBMODULE_FRAME                           ON  CACHE BOOL "" FORCE)
+if (${PARENT}_SUBMODULE_FRAME)
+    SET(${PARENT}_FRAME                                 ON  CACHE BOOL "" FORCE)
+    SET(${PARENT}_FRAME_TEST                            OFF CACHE BOOL "" FORCE)
+endif()
+
+SET(${PARENT}_SUBMODULE_VCODEC                          ON  CACHE BOOL "" FORCE)
+if (${PARENT}_SUBMODULE_VCODEC)
+    SET(${PARENT}_VCODEC                                ON  CACHE BOOL "" FORCE)
+endif()
+
+################################################################################
 ## INCLUDING SUBDIRECTORIES
 ## Adding subdirectories according to the 3rd-party configuration
 ################################################################################
-add_subdirectory(VCodec)
+if (${PARENT}_SUBMODULE_FRAME)
+    add_subdirectory(Frame)
+endif()
+
+if (${PARENT}_SUBMODULE_VCODEC)
+    add_subdirectory(VCodec)
+endif()
 ```
 
-The **3rdparty/CMakeLists.txt** file adds the **VCodec** folder to your project. Your repository's new structure will be:
+The **3rdparty/CMakeLists.txt** file adds the **Frame** and **VCodec** folders to your project (the dependency first, then the library). The structure of your repository will be:
 
 ```bash
 CMakeLists.txt
@@ -394,6 +433,7 @@ src
     yourLib.cpp
 3rdparty
     CMakeLists.txt
+    Frame
     VCodec
 ```
 
@@ -408,5 +448,7 @@ Next, you need to include the VCodec library in your **src/CMakeLists.txt** file
 ```cmake
 target_link_libraries(${PROJECT_NAME} VCodec)
 ```
+
+If your project does not add the **Frame** library, the compilation of the **VCodec** library fails because the **Frame.h** header file is not found (for example, GCC reports "Frame.h: No such file or directory").
 
 Done!
