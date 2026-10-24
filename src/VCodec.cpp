@@ -4,11 +4,11 @@
 
 
 
-cr::video::VCodec::~VCodec() = default;
+rapidpixel::VCodec::~VCodec() = default;
 
 
 
-std::string cr::video::VCodec::getVersion()
+std::string rapidpixel::VCodec::getVersion()
 {
     return VCODEC_VERSION;
 }

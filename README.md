@@ -139,7 +139,7 @@ static std::string getVersion();
 This method can be used without a **VCodec** class instance:
 
 ```cpp
-std::cout << "VCodec class version: " << cr::video::VCodec::getVersion() << std::endl;
+std::cout << "VCodec class version: " << rapidpixel::VCodec::getVersion() << std::endl;
 ```
 
 Console output:
@@ -256,9 +256,7 @@ enum class VCodecCommand
 Enum declaration:
 
 ```cpp
-namespace cr
-{
-namespace video
+namespace rapidpixel
 {
 enum class VCodecParam
 {
@@ -290,7 +288,6 @@ enum class VCodecParam
     /// [read/write] Custom parameter 3. Depends on implementation.
     CUSTOM_3
 };
-}
 }
 ```
 
