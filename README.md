@@ -44,7 +44,7 @@ The **VCodec** C++ library provides a standard interface and defines data struct
 | ------- | ------------ | ------------------------------------------------------------ |
 | 1.0.0   | 14.06.2023   | First version.                                               |
 | 1.1.0   | 20.06.2023   | - Added new parameter.                                       |
-| 1.1.1   | 28.06.2023   | - Frame submodule updated.<br />- Documentation updated.<br />- License added.<br />- Repository made public.<br />- Added new parameters. |
+| 1.1.1   | 28.06.2023   | - Frame submodule updated.<br />- Documentation updated.<br />- Repository made public.<br />- Added new parameters. |
 | 1.1.2   | 02.08.2023   | - Frame submodule updated.                                   |
 | 2.1.1   | 14.12.2023   | - Virtual destructor added.<br />- Frame submodule updated.  |
 | 2.1.2   | 14.12.2023   | - Frame submodule updated.<br />- Documentation updated.     |
