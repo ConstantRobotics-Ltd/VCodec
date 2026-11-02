@@ -34,6 +34,8 @@
 
 The **VCodec** C++ library provides a standard interface and defines data structures and rules for different video codecs (video encoding and decoding). The **VCodec** interface class does nothing; it just provides an interface. Different video codec classes inherit the interface from the **VCodec** C++ class. The **VCodec.h** file contains the **VCodecCommand** enum, **VCodecParam** enum, and **VCodec** class declaration. The **VCodecCommand** enum contains IDs of commands supported by **VCodec** class. The **VCodecParam** enum contains IDs of parameters supported by **VCodec** class. All video codecs should include all parameters and commands listed in the **VCodec.h** file. The **VCodec** class depends on the [Frame](https://rapidpixel.constantrobotics.com/docs/Service/Frame.html) class, which determines video frame structures. The video codec interface supports only 8-bit depth input pixel formats. It uses the C++17 standard.
 
+**VCodec** is general-purpose software: it is not tied to any sector or application, and the developer of a program decides what the program does with it.
+
 
 
 # Versions
