@@ -317,7 +317,7 @@ enum class VCodecParam
 
 ## Build stand alone
 
-The repository does not contain sub-repositories. The library **VCodec** depends on (**Frame**) must be cloned into the same folder as **VCodec**. The folder structure must be:
+The repository does not contain sub-repositories. The library **VCodec** depends on (**Frame**) must be placed in the same folder as **VCodec**: copy its folder, for example from the folder **modules** of the RapidPixel SDK. The folder structure must be:
 
 ```bash
 <work folder>
@@ -325,11 +325,9 @@ The repository does not contain sub-repositories. The library **VCodec** depends
     Frame
 ```
 
-Typical commands to build the library (use the URLs of the repositories provided to you):
+Typical commands to build the library:
 
 ```bash
-git clone <VCodec repository URL>
-git clone <Frame repository URL>
 cd VCodec
 mkdir build
 cd build
@@ -366,15 +364,7 @@ src
     yourLib.cpp
 ```
 
-You can add the **Frame** and **VCodec** repositories as sub-repositories with the following commands (use the URLs of the repositories provided to you):
-
-```bash
-cd <your repository folder>
-git submodule add <Frame repository URL> 3rdparty/Frame
-git submodule add <VCodec repository URL> 3rdparty/VCodec
-```
-
-In your repository folder, the **3rdparty/Frame** and **3rdparty/VCodec** folders will be created. Alternatively, you can copy the **Frame** and **VCodec** repository folders to the **3rdparty** folder of your repository. Create a CMakeLists.txt file in the **3rdparty** folder. The CMakeLists.txt file should contain:
+Create folder **3rdparty** in your repository and copy the folders of the libraries **Frame** and **VCodec** there (for example from the folder **modules** of the RapidPixel SDK). Create a CMakeLists.txt file in the **3rdparty** folder. The CMakeLists.txt file should contain:
 
 ```cmake
 cmake_minimum_required(VERSION 3.13)
