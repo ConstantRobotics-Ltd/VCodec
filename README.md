@@ -4,7 +4,7 @@
 
 # **VCodec interface C++ library**
 
-**v2.2.3**
+**v2.2.4**
 
 
 
@@ -57,6 +57,7 @@ The **VCodec** C++ library provides a standard interface and defines data struct
 | 2.2.1   | 02.11.2025   | - Fix code mistakes.<br />- Fix documentation mistakes.      |
 | 2.2.2   | 07.10.2026   | - Added compiler options.<br/>- Frame submodule updated. |
 | 2.2.3   | 15.10.2026   | - Compiler options fixed: warnings and exploit mitigation options are applied to the library target.<br/>- Protected constructors and assignment operators added to the interface class.<br/>- Frame submodule removed: the Frame library is added by the top-level project or from the folder next to the repository.<br/>- Documentation updated. |
+| 2.2.4   | 21.11.2026   | - CMake: hardening flags are checked with -Werror, the build with Clang 15 for AArch64 has no warnings. |
 
 
 
@@ -147,7 +148,7 @@ std::cout << "VCodec class version: " << rapidpixel::VCodec::getVersion() << std
 Console output:
 
 ```bash
-VCodec class version: 2.2.3
+VCodec class version: 2.2.4
 ```
 
 

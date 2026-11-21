@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.13)
 ## LIBRARY-PROJECT
 ## name and version
 ###############################################################################
-project(VCodec VERSION 2.2.3 LANGUAGES CXX)
+project(VCodec VERSION 2.2.4 LANGUAGES CXX)
 
 
 
@@ -57,6 +57,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(${PROJECT_NAME} Frame)
 
 include(CheckCXXCompilerFlag)
+include(CMakePushCheckState)
 if (MSVC)
     # All warnings, standard conformance, security checks, stack cookies and
     # control flow guard
@@ -85,9 +86,17 @@ else()
             # Clang on x86 accepts this option in the check but warns on every use
             list(APPEND HARDENING_FLAGS -mbranch-protection=standard)
         endif()
+        # The check uses -Werror: a flag which the compiler accepts but does
+        # not use for the target (a warning on every use, for example Clang 15
+        # and -fstack-clash-protection on AArch64) is left out. The results
+        # are cached under names of this library: other projects check the
+        # same flags without -Werror.
         foreach(FLAG ${HARDENING_FLAGS})
-            string(MAKE_C_IDENTIFIER "HAS${FLAG}" FLAG_VAR)
+            string(MAKE_C_IDENTIFIER "VCODEC_HAS${FLAG}" FLAG_VAR)
+            cmake_push_check_state()
+            set(CMAKE_REQUIRED_FLAGS -Werror)
             check_cxx_compiler_flag(${FLAG} ${FLAG_VAR})
+            cmake_pop_check_state()
             if (${FLAG_VAR})
                 target_compile_options(${PROJECT_NAME} PRIVATE ${FLAG})
             endif()
